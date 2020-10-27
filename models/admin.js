@@ -8,17 +8,20 @@ mongoose.connect('mongodb://localhost:27017/elective', {
 
 var Schema = mongoose.Schema
 
-var classifySchema = new Schema({
-    cname: {
+var adminSchema = mongoose.Schema({
+    username: {
         type: String,
         require: true
     },
-    value: {
+    password: {
+        type: String,
+        require: true
+    },
+    isSuper: {
         type: Number,
-        require: true,
-        default:0
+        require: true
     }
-
 })
 
-var Classify = module.exports = mongoose.model('Classify', classifySchema)
+
+var Admin = module.exports = mongoose.model('Admin', adminSchema)

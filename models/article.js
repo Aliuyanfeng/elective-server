@@ -8,32 +8,29 @@ mongoose.connect('mongodb://localhost:27017/elective', {
 
 var Schema = mongoose.Schema
 
-var userSchema = mongoose.Schema({
-    sno: {
+var articleSchema = new Schema({
+    title: {
         type: String,
         require: true
     },
-    username: {
+    ctime: {
         type: String,
         require: true
     },
-    password: {
+    content: {
+        type: String,
+        required: true
+    },
+    mcontent: {
+        type: String,
+        require: true
+    },
+    read: {
         type: Number,
         require: true,
         default: 0
-    },
-    class: {
-        type: String,
-        require: true,
-    },
-    major: {
-        type: String,
-        require: true,
-    },
-    institute: {
-        type: String,
-        require: true
     }
+
 })
 
-var User = module.exports = mongoose.model('User', userSchema)
+var Article = module.exports = mongoose.model('Article', articleSchema)

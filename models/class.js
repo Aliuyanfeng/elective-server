@@ -8,17 +8,22 @@ mongoose.connect('mongodb://localhost:27017/elective', {
 
 var Schema = mongoose.Schema
 
-var classifySchema = new Schema({
+var classSchema = new Schema({
     cname: {
         type: String,
         require: true
     },
-    value: {
-        type: Number,
+    mname: {
+        type: String,
+        require: true
+    },
+    iname: {
+        type: String,
         require: true,
-        default:0
     }
 
 })
 
-var Classify = module.exports = mongoose.model('Classify', classifySchema)
+var Class = module.exports = mongoose.model('Class', classSchema)
+
+var classes = ['软件17H02', '软件17H03']

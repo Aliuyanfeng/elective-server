@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser')
 
+
+const multerUpload = require('./routes/upload');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -21,14 +23,16 @@ app.use(express.urlencoded({
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'uploads')));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
+app.use('/admin', usersRouter);
+app.use('/upload', multerUpload)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

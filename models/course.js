@@ -39,10 +39,32 @@ var courseSchema = new Schema({
     },
     maxnum: {
         type: Number,
-        require: true
+        require: true,
+        default: 100
     },
     selnum: {
         type: Number,
+        require: true,
+        default: 0
+    },
+    introduce: {
+        type: String,
+        required: true
+    },
+    school: {
+        type: String,
+        required: true
+    },
+    objective: {
+        type: String,
+        required: true
+    },
+    year: {
+        type: String,
+        require: true
+    },
+    scope: {
+        type: String,
         require: true
     }
 

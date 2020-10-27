@@ -9,14 +9,15 @@ const selCourse = require('../models/selCourse.js');
 const classify = require('../models/classify.js');
 const cAnalyse = require('../models/classifyAnalyse.js');
 const mAnalyse = require('../models/moduleAnalyse.js')
+
 const secret = 'mes_qdhd_mobile_xhykjyxgs';
 
 router.get('/', function (req, res, next) {
   res.render('index', {
-    title: '你好啊'
+    title: '欢迎访问我的接口'
   });
 });
-//请求登陆
+//学生请求登陆
 router.post('/login', async function (req, res, next) {
   // console.log(req.headers)
   await User.findOne({
@@ -53,7 +54,7 @@ router.post('/login', async function (req, res, next) {
   })
 })
 
-//获取所有文章
+//获取所有课程
 router.get('/getAllCourse', async (req, res, next) => {
   await Course.find((err, data) => {
     if (err) {
@@ -70,15 +71,36 @@ router.get('/getAllCourse', async (req, res, next) => {
 //选择课程
 router.post('/selectCourse', (req, res, next) => {
   var classify = req.body.classify.slice(0, 2)
+  var modulename = req.body.classify.slice(3).slice(0, -1)
+  console.log(modulename)
   console.log(req.body.cid)
-  // console.log(classify)
+  console.log(classify)
+  mAnalyse.findOne({
+    name: modulename
+  }, (err, module) => {
+    if (err) {
+      return next(err)
+    }
+    console.log(module)
+    module.value += 1
+    mAnalyse.updateOne({
+      name: module.name
+    }, {
+      value: module.value
+    }, (err) => {
+      if (err) {
+        return next(err)
+      }
+    })
+  })
+
   cAnalyse.findOne({
     name: classify
   }, (err, classify) => {
     if (err) {
       return next(err)
     }
-    console.log(classify)
+    // console.log(classify)
     classify.value += 1
     cAnalyse.updateOne({
       name: classify.name
@@ -134,7 +156,28 @@ router.get('/getSelectedCourse/:sno', (req, res, next) => {
 //删除已选课程
 router.post('/delSelectedCourse', (req, res, next) => {
   var classify = req.body.classify.slice(0, 2)
-  console.log(classify)
+  var module = req.body.classify.slice(3).slice(0, -1)
+  console.log(module)
+  // console.log(classify)
+  mAnalyse.findOne({
+    name: module
+  }, (err, module) => {
+    if (err) {
+      return next(err)
+    }
+    console.log(module)
+    module.value -= 1
+    mAnalyse.updateOne({
+      name: module.name
+    }, {
+      value: module.value
+    }, (err) => {
+      if (err) {
+        return next(err)
+      }
+    })
+  })
+
   cAnalyse.findOne({
     name: classify
   }, (err, data) => {
@@ -203,5 +246,26 @@ router.get('/getModuleData', (req, res, next) => {
     })
   })
 })
+
+//获取学生信息
+router.get('/getStudentInfo/:sno', (req, res, next) => {
+  console.log(req.params.sno)
+  User.findOne({
+    sno: req.params.sno
+  }, (err, user) => {
+    if (err) {
+      return next(err)
+    }
+    res.json({
+      status: 0,
+      msg: 'is ok',
+      student: user
+    })
+  })
+})
+
+
+
+
 
 module.exports = router;

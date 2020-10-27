@@ -8,17 +8,23 @@ mongoose.connect('mongodb://localhost:27017/elective', {
 
 var Schema = mongoose.Schema
 
-var classifySchema = new Schema({
-    cname: {
+var majorSchema = new Schema({
+    mname: {
         type: String,
-        require: true
-    },
-    value: {
-        type: Number,
         require: true,
-        default:0
+    },
+    iname: {
+        type: String,
+        require: true,
     }
 
 })
 
-var Classify = module.exports = mongoose.model('Classify', classifySchema)
+var Major = module.exports = mongoose.model('Major', majorSchema)
+
+
+var nmajor = new Major({
+    mname:'test',
+    iname:'test'
+})
+nmajor.save()
