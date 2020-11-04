@@ -8,6 +8,7 @@ const cp = require('child_process')
 const iconv = require('iconv-lite');
 const Course = require('../models/course')
 const User = require('../models/user')
+const selCourse = require('../models/selCourse')
 const { oldpath, date, newpath } = require('../routes/schedule.js')
 
 
@@ -28,10 +29,8 @@ let upload = multer({
 
 //课程文件上传
 router.post('/uploadCourse', upload.single('file'), (req, res) => {
-
     //解析excel文件
     let obj = node_xlsx.parse(basePath + req.file.filename);
-
     //获取第一个sheet
     let excelobj = obj[0].data;
     //要插入数据库的数据
@@ -164,20 +163,16 @@ router.get('/exportCourse', (req, res) => {
             datas.push(arrInner);//data中添加的要是数组，可以将对象的值分解添加进数组，例如：['1','name','上海']
         });
         var name = GetDateStr() + '公选课信息' + '.xlsx';
-
-
-        // console.log(name)
         writeExcel(name, datas);
         res.download('./uploads/' + name);
     });
 });
 
-//导出
+//导出学生
 router.get('/exportStudent', (req, res) => {
     User.find().exec((err, data) => {
-        console.log(data)
+        // console.log(data)
         var datas = [];
-
         var title = ['学号', '姓名', '密码', '班级', '专业', '学院']
         datas.push(title);
         data.forEach((item) => {
@@ -192,20 +187,43 @@ router.get('/exportStudent', (req, res) => {
             datas.push(arrInner);
         });
         var name = GetDateStr() + '学生信息' + '.xlsx';
+        writeExcel(name, datas);
+        res.download('./uploads/' + name);
+    });
+});
 
-        console.log(name)
+//导出已选课程
+router.get('/exportSelcourse', (req, res) => {
+    selCourse.find().exec((err, data) => {
+        // console.log(data)
+        var datas = [];
+
+        var title = ['课程ID', '课程名称', '任课教师', '分类', '地址', '学号']
+        datas.push(title);
+        data.forEach((item) => {
+            var arrInner = [];
+            arrInner.push(item.cid);
+            arrInner.push(item.cname);
+            arrInner.push(item.teacher);
+            arrInner.push(item.classify);
+            arrInner.push(item.address);
+            arrInner.push(item.sno);
+
+            datas.push(arrInner);
+        });
+        var name = GetDateStr() + '已选课程' + '.xlsx';
         writeExcel(name, datas);
         res.download('./uploads/' + name);
     });
 });
 
 
-
+//写入到文件夹
 function writeExcel(name, data) {
     var buffer = node_xlsx.build([{ name: 'sheet1', data: data }]);
     fs.writeFileSync('./uploads/' + name, buffer, { 'flag': 'w' });
 }
-
+//获取日期
 function GetDateStr() {
     return new Date().toJSON().slice(0, 10)
 }
