@@ -12,6 +12,7 @@ const Class = require('../models/class')
 const Institute = require("../models/institute");
 const Major = require('../models/major');
 const { route } = require('.');
+const { decode } = require('iconv-lite');
 
 const secret = 'alogin rules'
 
@@ -53,6 +54,22 @@ const isSuper = async (req, res, next) => {
 
 }
 
+//判断token是否过期
+const tokenVerify = async (req, res, next) => {
+  const token = req.headers.authorization.split(' ').pop()
+  console.log(token)
+   jwt.verify(token.secret, (err, decode) => {
+    if (err) {
+      res.json({
+        status: 403,
+        msg: 'token过期'
+      })
+    } else {
+      next()
+    }
+  })
+}
+
 // 管理员登陆
 router.post('/alogin', async (req, res, next) => {
   // console.log(req.body)
@@ -83,7 +100,7 @@ router.post('/alogin', async (req, res, next) => {
     _id,
     username
   }, secret, {
-    expiresIn: '1h'
+    expiresIn: '0.01h'
   })
   return res.json({
     status: 0,
@@ -103,6 +120,9 @@ router.post('/alogin', async (req, res, next) => {
   //   })
   // })
 });
+
+
+
 
 //获取所有分类
 router.get('/getAllClassify', (req, res, next) => {
@@ -149,7 +169,7 @@ router.post('/addCourse', (req, res, next) => {
 })
 
 //发布文章
-router.post('/write', (req, res, next) => {
+router.post('/write', tokenVerify, (req, res, next) => {
   console.log(req.body)
   var article = new Article(req.body)
   article.save((err) => {
